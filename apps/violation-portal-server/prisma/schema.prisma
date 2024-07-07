@@ -1,0 +1,47 @@
+datasource db {
+  provider = "mongodb"
+  url      = env("DB_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Complaint {
+  id          String              @id @default(auto()) @map("_id") @db.ObjectId
+  createdAt   DateTime            @default(now())
+  updatedAt   DateTime            @updatedAt
+  carNumber   String
+  description String
+  status      EnumComplaintStatus
+  user        User?               @relation(fields: [userId], references: [id])
+  userId      String?             @db.ObjectId
+}
+
+model Admin {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  username  String
+  password  String
+}
+
+model User {
+  id            String      @id @default(auto()) @map("_id") @db.ObjectId
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+  firstName     String
+  lastName      String
+  username      String      @unique
+  email         String      @unique
+  password      String
+  fullName      String
+  phone String @regex(/^\+7\(\d\d\d\)-\d\d\d-\d\d-\d\d$/)
+  complaints    Complaint[]
+  middleName    String
+  middleNameNew String?
+}
+
+enum EnumComplaintStatus {
+  Option1
+}
